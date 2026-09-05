@@ -99,6 +99,13 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
           cache-dependency-path: ${{ inputs.service }}/go.sum
 
+      # Pre-build so all packages (incl. pgx/v4/stdlib) have export data
+      # available for golangci-lint's type-checking analyzers.
+      - name: Prime build cache
+        run: |
+          go mod download
+          go build ./...
+
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v8
         with:
@@ -106,6 +113,7 @@ jobs:
           working-directory: ${{ inputs.service }}
           args: --timeout=5m
           only-new-issues: false
+          skip-cache: true
 
   # ────────────────────────────────────────────
   # JOB 3 — Security Scan (SAST + SCA)
