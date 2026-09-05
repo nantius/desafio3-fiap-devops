@@ -18,6 +18,9 @@ on:
 jobs:
   pipeline:
     uses: ./.github/workflows/reusable-python.yml
+    permissions:
+      id-token: write
+      contents: write
     with:
       service: flag-service
       ecr_repository: flag-service

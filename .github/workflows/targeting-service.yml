@@ -18,6 +18,9 @@ on:
 jobs:
   pipeline:
     uses: ./.github/workflows/reusable-python.yml
+    permissions:
+      id-token: write
+      contents: write
     with:
       service: targeting-service
       ecr_repository: targeting-service

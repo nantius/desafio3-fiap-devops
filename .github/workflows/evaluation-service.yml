@@ -18,6 +18,9 @@ on:
 jobs:
   pipeline:
     uses: ./.github/workflows/reusable-go.yml
+    permissions:
+      id-token: write
+      contents: write
     with:
       service: evaluation-service
       ecr_repository: evaluation-service
