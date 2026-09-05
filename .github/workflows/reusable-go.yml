@@ -100,13 +100,11 @@ jobs:
           cache-dependency-path: ${{ inputs.service }}/go.sum
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v8
         with:
-          version: latest
+          version: v2.3.0
           working-directory: ${{ inputs.service }}
-          args: >-
-            --timeout=5m
-            --enable=govet,errcheck,staticcheck,gosimple,ineffassign,unused,bodyclose,noctx
+          args: --timeout=5m
           only-new-issues: false
 
   # ────────────────────────────────────────────
