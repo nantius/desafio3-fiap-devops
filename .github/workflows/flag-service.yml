@@ -2,14 +2,14 @@ name: flag-service CI/CD
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     tags: ["v*.*.*"]
     paths:
       - "flag-service/**"
       - ".github/workflows/flag-service.yml"
       - ".github/workflows/reusable-python.yml"
   pull_request:
-    branches: [main]
+    branches: [master]
     paths:
       - "flag-service/**"
       - ".github/workflows/flag-service.yml"

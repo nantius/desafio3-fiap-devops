@@ -2,14 +2,14 @@ name: targeting-service CI/CD
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     tags: ["v*.*.*"]
     paths:
       - "targeting-service/**"
       - ".github/workflows/targeting-service.yml"
       - ".github/workflows/reusable-python.yml"
   pull_request:
-    branches: [main]
+    branches: [master]
     paths:
       - "targeting-service/**"
       - ".github/workflows/targeting-service.yml"

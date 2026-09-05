@@ -312,5 +312,5 @@ jobs:
             echo "No changes to commit — image tag already up to date."
           else
             git commit -m "chore(gitops): update ${{ inputs.service }} image to ${{ needs.docker.outputs.version }} [skip ci]"
-            git push
+            git push origin master
           fi
