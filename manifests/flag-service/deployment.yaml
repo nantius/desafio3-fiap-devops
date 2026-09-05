@@ -18,7 +18,7 @@ spec:
       serviceAccountName: flag-service-sa   
       containers:
         - name: flag-service
-          image: 052058222675.dkr.ecr.us-east-1.amazonaws.com/flag-service:latest
+          image: 
           ports:
             - containerPort: 8002
           livenessProbe:
