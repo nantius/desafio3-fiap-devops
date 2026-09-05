@@ -15,7 +15,7 @@ spec:
   source:
     # Replace with your actual repo URL
     repoURL: https://github.com/nantius/desafio3-fiap-devops
-    targetRevision: main
+    targetRevision: master
     path: manifests/argocd
   destination:
     server: https://kubernetes.default.svc

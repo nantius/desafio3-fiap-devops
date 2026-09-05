@@ -29,6 +29,12 @@ variable "cluster_ca_certificate" {
   sensitive   = true
 }
 
+variable "keda_chart_version" {
+  description = "KEDA Helm chart version to install"
+  type        = string
+  default     = "2.15.1"
+}
+
 variable "nginx_ingress_chart_version" {
   description = "ingress-nginx Helm chart version to install"
   type        = string

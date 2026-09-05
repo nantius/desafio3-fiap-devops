@@ -34,6 +34,26 @@ resource "kubernetes_namespace" "argocd" {
 }
 
 # ─────────────────────────────────────────────
+# KEDA — Kubernetes Event-driven Autoscaling
+# Used by analytics-service to scale based on
+# SQS queue depth (ScaledObject + TriggerAuthentication).
+# Must be installed before ArgoCD syncs analytics-service.
+# ─────────────────────────────────────────────
+resource "helm_release" "keda" {
+  name       = "keda"
+  repository = "https://kedacore.github.io/charts"
+  chart      = "keda"
+  version    = var.keda_chart_version
+  namespace  = "keda"
+
+  create_namespace = true
+  wait             = true
+  timeout          = 300
+
+  depends_on = [kubernetes_namespace.argocd]
+}
+
+# ─────────────────────────────────────────────
 # NGINX Ingress Controller
 # Creates a single AWS NLB (LoadBalancer Service)
 # shared by all 5 services via path-based routing.
