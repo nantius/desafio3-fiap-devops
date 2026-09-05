@@ -9,7 +9,9 @@ resources:
   - namespace.yaml
   - service-account.yaml
   - configmap.yaml
+  - db-init-configmap.yaml
   - secret.yaml
+  - db-job.yaml
   - deployment.yaml
   - service.yaml
   - ingress.yaml

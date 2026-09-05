@@ -1,8 +1,8 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: init-targeting-db
-  namespace: targeting-service
+  name: init-flag-db
+  namespace: flag-service
   annotations:
     argocd.argoproj.io/hook: PostSync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
@@ -23,27 +23,27 @@ spec:
             - name: PGHOST
               valueFrom:
                 configMapKeyRef:
-                  name: targeting-service-config
+                  name: flag-service-config
                   key: DB_HOST
             - name: PGPORT
               valueFrom:
                 configMapKeyRef:
-                  name: targeting-service-config
+                  name: flag-service-config
                   key: DB_PORT
             - name: PGDATABASE
               valueFrom:
                 configMapKeyRef:
-                  name: targeting-service-config
+                  name: flag-service-config
                   key: DB_NAME
             - name: PGUSER
               valueFrom:
                 secretKeyRef:
-                  name: targeting-service-secret
+                  name: flag-service-secret
                   key: DB_USER
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: targeting-service-secret
+                  name: flag-service-secret
                   key: DB_PASS
             - name: PGSSLMODE
               value: "require"
@@ -54,4 +54,4 @@ spec:
       volumes:
         - name: init-sql
           configMap:
-            name: targeting-db-init-sql
+            name: flag-db-init-sql
