@@ -12,6 +12,27 @@
 
 data "aws_caller_identity" "current" {}
 
+# ─────────────────────────────────────────────
+# GitHub Actions OIDC Provider
+#
+# Registers GitHub's OIDC issuer with AWS IAM so
+# workflows can exchange their OIDC token for AWS
+# credentials via AssumeRoleWithWebIdentity.
+# Only one of these may exist per account, so it
+# is created here (idempotent for this account).
+# ─────────────────────────────────────────────
+resource "aws_iam_openid_connect_provider" "github" {
+  url             = "https://token.actions.githubusercontent.com"
+  client_id_list  = ["sts.amazonaws.com"]
+  # GitHub's OIDC thumbprint is no longer validated by AWS for this
+  # well-known IdP, but the field is still required by the API.
+  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
+
+  tags = merge(local.common_tags, {
+    Name = "${var.project}-${var.environment}-github-actions-oidc"
+  })
+}
+
 # ── Trust Policy ─────────────────────────────
 data "aws_iam_policy_document" "github_actions_trust" {
   statement {
@@ -20,7 +41,7 @@ data "aws_iam_policy_document" "github_actions_trust" {
 
     principals {
       type        = "Federated"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/token.actions.githubusercontent.com"]
+      identifiers = [aws_iam_openid_connect_provider.github.arn]
     }
 
     # Audience must be sts.amazonaws.com
