@@ -55,6 +55,9 @@ jobs:
       - name: Download modules
         run: go mod download
 
+      - name: Tidy modules (ensures go.sum is consistent)
+        run: go mod tidy
+
       - name: Verify modules (tamper check)
         run: go mod verify
 
