@@ -51,11 +51,17 @@ data "aws_iam_policy_document" "github_actions_trust" {
       values   = ["sts.amazonaws.com"]
     }
 
-    # Scope to a specific GitHub repo — any branch or tag
+    # Scope to a specific GitHub repo — any branch or tag.
+    # The org has a customized OIDC subject claim template that injects
+    # immutable numeric IDs (e.g. repo:nantius@9022731/repo@1354099251:...),
+    # so we match with wildcards around the org and repo segments.
     condition {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.github_org}/${var.github_repo}:*"]
+      values = [
+        "repo:${var.github_org}/${var.github_repo}:*",
+        "repo:${var.github_org}@*/${var.github_repo}@*:*",
+      ]
     }
   }
 }
