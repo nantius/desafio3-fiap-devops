@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-targeting-db
+  namespace: targeting-service
+spec:
+  template:
+    spec:
+      containers:
+      - name: init-db
+        image: postgres:15
+        command: ["psql"]
+        args: [
+          "-h", "targeting-db.ci7y0g2yihgk.us-east-1.rds.amazonaws.com",
+          "-U", "targeting",
+          "-d", "targeting_db",
+          "-f", "/init/init.sql"
+        ]
+        env:
+        - name: PGPASSWORD
+          value: ""
+        volumeMounts:
+        - name: init-sql
+          mountPath: /init
+      restartPolicy: Never
+      volumes:
+      - name: init-sql
+        configMap:
+          name: targeting-db-init-sql
