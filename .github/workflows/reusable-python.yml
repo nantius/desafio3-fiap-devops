@@ -308,10 +308,12 @@ jobs:
             echo "Manifest not found at $MANIFEST — skipping update."
             exit 0
           fi
-          # Replace only the image line for this service's ECR repository.
-          # Pattern matches:  image: <account>.dkr.ecr.<region>.amazonaws.com/<repo>:<any-tag>
-          sed -i "s|image: .*/${{ inputs.ecr_repository }}:.*|image: ${NEW_IMAGE}|g" "$MANIFEST"
+          # Replace the container image line. Matches any "image:" line
+          # (empty, placeholder, or a previous ECR reference) and sets it to
+          # the freshly pushed image.
+          sed -i -E "s|^([[:space:]]*)image:.*|\1image: ${NEW_IMAGE}|g" "$MANIFEST"
           echo "Updated $MANIFEST to ${NEW_IMAGE}"
+          grep -n "image:" "$MANIFEST"
 
       - name: Commit and push if changed
         run: |

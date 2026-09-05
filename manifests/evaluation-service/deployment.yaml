@@ -18,7 +18,7 @@ spec:
       serviceAccountName: evaluation-service-sa   
       containers:
         - name: evaluation-service
-          image: 278375639105.dkr.ecr.us-east-1.amazonaws.com/evaluation-service:latest
+          image: 052058222675.dkr.ecr.us-east-1.amazonaws.com/evaluation-service:latest
           ports:
             - containerPort: 8004
           livenessProbe:

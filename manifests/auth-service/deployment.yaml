@@ -18,7 +18,7 @@ spec:
       serviceAccountName: auth-service-sa   
       containers:
         - name: auth-service
-          image: 
+          image: 052058222675.dkr.ecr.us-east-1.amazonaws.com/auth-service:sha-0a09b9a
           ports:
             - containerPort: 8001
           livenessProbe:
