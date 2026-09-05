@@ -168,15 +168,19 @@ jobs:
           if-no-files-found: ignore
 
       # ── SCA: Trivy filesystem (dependencies) ─
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.71.0
+
       - name: Trivy SCA — filesystem scan
-        uses: aquasecurity/trivy-action@0.24.0
-        with:
-          scan-type: fs
-          scan-ref: ${{ inputs.service }}
-          format: table
-          severity: CRITICAL,HIGH
-          exit-code: "1"          # Block on CRITICAL/HIGH in dependencies
-          ignore-unfixed: true
+        run: |
+          trivy fs \
+            --scanners vuln \
+            --severity CRITICAL,HIGH \
+            --exit-code 1 \
+            --ignore-unfixed \
+            --format table \
+            ${{ inputs.service }}
 
   # ────────────────────────────────────────────
   # JOB 4 — Docker Build, Container Scan & ECR Push
@@ -231,24 +235,30 @@ jobs:
             ${{ inputs.service }}/
 
       # ── Container Scan: Trivy image ──────────
-      - name: Trivy container image scan
-        uses: aquasecurity/trivy-action@0.24.0
-        with:
-          image-ref: ${{ steps.meta.outputs.image }}
-          format: table
-          severity: CRITICAL
-          exit-code: "1"          # Block on CRITICAL vulnerabilities in the image
-          ignore-unfixed: true
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.71.0
 
-      - name: Upload Trivy image scan results
+      - name: Trivy container image scan
+        run: |
+          trivy image \
+            --scanners vuln \
+            --severity CRITICAL \
+            --exit-code 1 \
+            --ignore-unfixed \
+            --format table \
+            "${{ steps.meta.outputs.image }}"
+
+      - name: Trivy SARIF report
         if: always()
-        uses: aquasecurity/trivy-action@0.24.0
-        with:
-          image-ref: ${{ steps.meta.outputs.image }}
-          format: sarif
-          output: trivy-${{ inputs.service }}.sarif
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
+        run: |
+          trivy image \
+            --scanners vuln \
+            --severity CRITICAL,HIGH \
+            --ignore-unfixed \
+            --format sarif \
+            --output trivy-${{ inputs.service }}.sarif \
+            "${{ steps.meta.outputs.image }}"
 
       - name: Upload Trivy SARIF
         if: always()
