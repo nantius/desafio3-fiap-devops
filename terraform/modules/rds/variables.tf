@@ -23,6 +23,11 @@ variable "eks_node_security_group_id" {
   type        = string
 }
 
+variable "vpc_cidr" {
+  description = "VPC CIDR block — allowed inbound on 5432 so EKS pods (which use VPC CNI IPs) can reach RDS regardless of which SG their ENI carries"
+  type        = string
+}
+
 # ── Engine ───────────────────────────────────
 variable "engine_version" {
   description = "PostgreSQL engine version"
