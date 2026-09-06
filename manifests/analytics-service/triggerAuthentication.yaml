@@ -8,4 +8,4 @@ spec:
   # account is annotated with an IAM role that has sqs:GetQueueAttributes).
   podIdentity:
     provider: aws
-    identityOwner: operator
+    identityOwner: keda
