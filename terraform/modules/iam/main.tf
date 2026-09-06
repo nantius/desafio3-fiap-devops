@@ -183,3 +183,66 @@ resource "aws_iam_role_policy" "analytics_service" {
     ]
   })
 }
+
+# ─────────────────────────────────────────────
+# KEDA operator (IRSA)
+# The KEDA operator polls SQS queue depth to drive
+# autoscaling for analytics-service. It runs in the
+# "keda" namespace under the "keda-operator" service
+# account, so it needs its own IRSA role with SQS
+# read access. TriggerAuthentication uses
+# identityOwner: operator to consume this identity.
+# ─────────────────────────────────────────────
+data "aws_iam_policy_document" "keda_operator_trust" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    principals {
+      type        = "Federated"
+      identifiers = [var.oidc_provider_arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${local.oidc_url}:sub"
+      values   = ["system:serviceaccount:keda:keda-operator"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${local.oidc_url}:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "keda_operator" {
+  name               = "${var.project}-${var.environment}-keda-operator-role"
+  assume_role_policy = data.aws_iam_policy_document.keda_operator_trust.json
+
+  tags = merge(local.common_tags, {
+    Name    = "${var.project}-${var.environment}-keda-operator-role"
+    Service = "keda"
+  })
+}
+
+resource "aws_iam_role_policy" "keda_operator" {
+  name = "${var.project}-${var.environment}-keda-operator-policy"
+  role = aws_iam_role.keda_operator.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "SQSReadForScaling"
+        Effect = "Allow"
+        Action = [
+          "sqs:GetQueueAttributes",
+          "sqs:GetQueueUrl",
+        ]
+        Resource = [var.sqs_queue_arn]
+      }
+    ]
+  })
+}

@@ -50,6 +50,14 @@ resource "helm_release" "keda" {
   wait             = true
   timeout          = 300
 
+  # Annotate the keda-operator service account with the IRSA role so the
+  # operator can assume AWS credentials (used by the SQS scaler for
+  # analytics-service via TriggerAuthentication identityOwner: operator).
+  set {
+    name  = "serviceAccount.operator.annotations.eks\\.amazonaws\\.com/role-arn"
+    value = var.keda_operator_role_arn
+  }
+
   depends_on = [kubernetes_namespace.argocd]
 }
 

@@ -234,6 +234,8 @@ module "argocd" {
   argocd_namespace     = var.argocd_namespace
   argocd_chart_version = var.argocd_chart_version
 
+  keda_operator_role_arn = module.iam.keda_operator_role_arn
+
   gitops_repo_url       = var.gitops_repo_url
   gitops_repo_branch    = var.gitops_repo_branch
   gitops_manifests_path = var.gitops_manifests_path

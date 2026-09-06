@@ -4,9 +4,8 @@ metadata:
   name: keda-aws-auth
   namespace: analytics-service
 spec:
-  # Use IRSA (pod identity) instead of static AWS keys.
-  # KEDA assumes the analytics-service IAM role via the workload's
-  # service account identity webhook.
+  # Use the KEDA operator's own IRSA identity (the keda-operator service
+  # account is annotated with an IAM role that has sqs:GetQueueAttributes).
   podIdentity:
     provider: aws
-    identityOwner: workload
+    identityOwner: operator
