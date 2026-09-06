@@ -38,6 +38,17 @@ resource "aws_security_group" "redis" {
     security_groups = [var.eks_node_security_group_id]
   }
 
+  # EKS pods use VPC CNI secondary IPs whose ENI may carry the EKS-managed
+  # cluster SG rather than the node SG. Allowing the VPC CIDR ensures pod
+  # traffic reaches Redis. Safe because ElastiCache is private (in-VPC only).
+  ingress {
+    description = "Redis from within the VPC (EKS pods)"
+    from_port   = 6379
+    to_port     = 6379
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
+  }
+
   egress {
     description = "Allow all outbound"
     from_port   = 0

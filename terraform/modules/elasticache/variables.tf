@@ -23,6 +23,11 @@ variable "eks_node_security_group_id" {
   type        = string
 }
 
+variable "vpc_cidr" {
+  description = "VPC CIDR block — allowed inbound on 6379 so EKS pods (VPC CNI IPs) can reach Redis regardless of which SG their ENI carries"
+  type        = string
+}
+
 # ── Engine ───────────────────────────────────
 variable "engine_version" {
   description = "Redis engine version"

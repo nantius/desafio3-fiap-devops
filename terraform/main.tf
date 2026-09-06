@@ -143,6 +143,7 @@ module "elasticache" {
   vpc_id                     = module.vpc.vpc_id
   private_subnet_ids         = module.vpc.private_subnet_ids
   eks_node_security_group_id = module.eks.node_security_group_id
+  vpc_cidr                   = var.vpc_cidr
 
   engine_version          = var.redis_engine_version
   node_type               = var.redis_node_type
