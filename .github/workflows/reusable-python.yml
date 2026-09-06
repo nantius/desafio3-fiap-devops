@@ -308,6 +308,12 @@ jobs:
             echo "Manifest not found at $MANIFEST — skipping update."
             exit 0
           fi
+          # Guard: never write an empty image (would produce an invalid
+          # Deployment and break the ArgoCD sync). Fail loudly instead.
+          if [ -z "$NEW_IMAGE" ]; then
+            echo "NEW_IMAGE is empty — docker job output did not propagate. Aborting." >&2
+            exit 1
+          fi
           # Replace the container image line. Matches any "image:" line
           # (empty, placeholder, or a previous ECR reference) and sets it to
           # the freshly pushed image.
