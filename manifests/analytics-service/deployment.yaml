@@ -18,7 +18,7 @@ spec:
       serviceAccountName: analytics-service-sa   
       containers:
         - name: analytics-service
-          image: 052058222675.dkr.ecr.us-east-1.amazonaws.com/analytics-service:latest
+          image: 
           ports:
             - containerPort: 8005
           livenessProbe:
