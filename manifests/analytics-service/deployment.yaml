@@ -6,7 +6,7 @@ metadata:
   labels:
     app: analytics-service
 spec:
-  replicas: 0   # scaled down intentionally — set back to 1 to resume
+  replicas: 1
   selector:
     matchLabels:
       app: analytics-service
