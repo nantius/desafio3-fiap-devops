@@ -4,10 +4,9 @@ metadata:
   name: keda-aws-auth
   namespace: analytics-service
 spec:
-  secretTargetRef:
-    - parameter: awsAccessKeyID
-      name: analytics-service-secret
-      key: AWS_ACCESS_KEY_ID
-    - parameter: awsSecretAccessKey
-      name: analytics-service-secret
-      key: AWS_SECRET_ACCESS_KEY
+  # Use IRSA (pod identity) instead of static AWS keys.
+  # KEDA assumes the analytics-service IAM role via the workload's
+  # service account identity webhook.
+  podIdentity:
+    provider: aws
+    identityOwner: workload
