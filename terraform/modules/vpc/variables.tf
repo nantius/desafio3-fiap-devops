@@ -37,6 +37,16 @@ variable "private_subnet_cidrs" {
   default     = ["10.0.11.0/24", "10.0.12.0/24", "10.0.13.0/24"]
 }
 
+variable "single_nat_gateway" {
+  description = <<-EOT
+    If true, provision a single NAT Gateway shared by all private subnets
+    (lower cost, ~1/3 the NAT spend). If false, provision one NAT Gateway
+    per AZ for high availability (recommended for production).
+  EOT
+  type        = bool
+  default     = true
+}
+
 variable "tags" {
   description = "Additional tags to apply to all resources"
   type        = map(string)

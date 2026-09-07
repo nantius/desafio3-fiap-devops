@@ -82,11 +82,18 @@ resource "aws_subnet" "private" {
 }
 
 # ─────────────────────────────────────────────
+# NAT Gateway count: 1 when single_nat_gateway is
+# true, otherwise one per AZ for high availability.
+# ─────────────────────────────────────────────
+locals {
+  nat_gateway_count = var.single_nat_gateway ? 1 : length(var.availability_zones)
+}
+
+# ─────────────────────────────────────────────
 # Elastic IPs for NAT Gateways
-# One NAT Gateway per AZ for high availability
 # ─────────────────────────────────────────────
 resource "aws_eip" "nat" {
-  count  = length(var.availability_zones)
+  count  = local.nat_gateway_count
   domain = "vpc"
 
   tags = merge(local.common_tags, {
@@ -97,10 +104,10 @@ resource "aws_eip" "nat" {
 }
 
 # ─────────────────────────────────────────────
-# NAT Gateways  (one per AZ, placed in public subnets)
+# NAT Gateways  (placed in public subnets)
 # ─────────────────────────────────────────────
 resource "aws_nat_gateway" "this" {
-  count = length(var.availability_zones)
+  count = local.nat_gateway_count
 
   allocation_id = aws_eip.nat[count.index].id
   subnet_id     = aws_subnet.public[count.index].id
@@ -136,7 +143,10 @@ resource "aws_route_table_association" "public" {
 }
 
 # ─────────────────────────────────────────────
-# Private Route Tables  (one per AZ → own NAT)
+# Private Route Tables  (one per AZ)
+# Each routes 0.0.0.0/0 to a NAT Gateway. With a
+# single NAT, all AZs route through NAT index 0;
+# otherwise each AZ uses its own NAT.
 # ─────────────────────────────────────────────
 resource "aws_route_table" "private" {
   count  = length(var.availability_zones)
@@ -144,7 +154,7 @@ resource "aws_route_table" "private" {
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.this[count.index].id
+    nat_gateway_id = aws_nat_gateway.this[var.single_nat_gateway ? 0 : count.index].id
   }
 
   tags = merge(local.common_tags, {

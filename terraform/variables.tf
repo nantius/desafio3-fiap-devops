@@ -52,6 +52,12 @@ variable "private_subnet_cidrs" {
   default     = ["10.0.11.0/24", "10.0.12.0/24", "10.0.13.0/24"]
 }
 
+variable "single_nat_gateway" {
+  description = "Use a single shared NAT Gateway (cost saving) instead of one per AZ (HA). Set false for production."
+  type        = bool
+  default     = true
+}
+
 # ═══════════════════════════════════════════════
 # EKS
 # ═══════════════════════════════════════════════
